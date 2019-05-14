@@ -1,0 +1,67 @@
+安装npm i epubjs --save-dev
+
+实例化:
+import Epub from 'epubjs'
+this.book = new Epub('电子书的路径')
+
+渲染:
+this.rendition = this.book.renderTo('read', {
+        width: innerWidth,
+        height: innerHeight,
+        method: 'default'
+      })
+//'read'为挂在的元素id,method:'default'兼容微信
+//返回的是this.book.rendition对象
+
+注册事件:
+(新版本的on有bug,可以使用稳定版本0.3.71的epubjs)
+this.rendition.on('click',fn)
+this.rendition.on('touchstart',fn)
+this.rendition.on('touchend',fn)
+
+常用api:
+this.rendition.prev()返回上一页
+this.rendition.next()进入下一页
+
+设置字体大小:
+this.rendition.themes.fontSize('20px')
+
+设置字体,font-family
+this.rendition.themes.font('font-family')
+
+epub默认的英文字体
+Times New Roman
+
+给epub的iframe  添加样式(比如字体样式)
+this.rendition.hooks.content.register(contents => {
+  contents.addStylesheet('http://192.168.3.1/somecss/reset.css')//这里需要是http路径ces
+})
+
+注册主题样式
+this.rendition.themes.register('主题名称', 样式对象)
+{
+        body: {
+          'color': '#4c5059',
+          'background': '#cecece'
+        }
+}
+选择主题样式
+this.rendition.themes.select('主题名称')
+
+章节信息
+this.book.spine 在这个对象里,  this.book.spine.length为章节数
+
+获取封面的方法
+this.book.loaded.cover  返回promise对象
+this.book.loaded.cover.then(res=>{
+//res为封面图片的路径,但还需转换为可使用的绝对路径
+  this.book.archive.createUrl(res).then( url=>{
+    //此处的url是我们想要的图片绝对路径
+  })
+})
+
+获取书籍的基本信息metadata
+this.book.loaded.metadata.then( metadata=> {
+  //metadata为书籍信息对象(标题,作者,简介等信息就存放于此)
+} )
+
